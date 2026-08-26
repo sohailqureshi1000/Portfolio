@@ -2117,7 +2117,7 @@ main, header, footer {
 
     display: block;
 
-    object-fit: cover;
+    object-fit: contain;
 
     filter: grayscale(25%);
 
