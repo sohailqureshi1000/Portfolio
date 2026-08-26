@@ -964,13 +964,50 @@
               talk about technology and development, feel free to reach out.
             </p>
 
-            <a
-              href="mailto:sohailqureshii1000@gmail.com"
-              class="btn primary-btn"
-            >
-              Send Me an Email
-              <i class="fa-solid fa-arrow-right"></i>
-            </a>
+            <form id="contact-form" class="contact-form" novalidate>
+              <div class="form-group">
+                <label for="cf-name">Name</label>
+                <input
+                  type="text"
+                  id="cf-name"
+                  name="name"
+                  class="form-input"
+                  placeholder="Your name"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="cf-email">Email</label>
+                <input
+                  type="email"
+                  id="cf-email"
+                  name="email"
+                  class="form-input"
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="cf-message">Message</label>
+                <textarea
+                  id="cf-message"
+                  name="message"
+                  class="form-input form-textarea"
+                  rows="4"
+                  placeholder="What would you like to talk about?"
+                  required
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn primary-btn" id="cf-submit">
+                <span id="cf-submit-text">Send Message</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+
+              <p id="cf-status" class="form-status" role="status"></p>
+            </form>
           </div>
 
           <!-- CONTACT DETAILS -->

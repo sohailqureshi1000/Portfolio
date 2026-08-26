@@ -522,3 +522,66 @@ if (mailtoLinks.length) {
 
 }
 }
+/* =========================================
+   CONTACT FORM SUBMISSION
+   Sends form data to the live Express backend,
+   which validates it and emails it to me.
+========================================= */
+
+const CONTACT_API_URL = "/api/contact";
+// ^ Same-origin Vercel serverless function — frontend and backend deploy
+//   together from this repo, so no separate URL or CORS setup is needed.
+
+(function () {
+    const form = document.getElementById("contact-form");
+    if (!form) return;
+
+    const submitBtn = document.getElementById("cf-submit");
+    const submitText = document.getElementById("cf-submit-text");
+    const statusEl = document.getElementById("cf-status");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById("cf-name").value.trim();
+        const email = document.getElementById("cf-email").value.trim();
+        const message = document.getElementById("cf-message").value.trim();
+
+        statusEl.textContent = "";
+        statusEl.className = "form-status";
+
+        if (!name || !email || !message) {
+            statusEl.textContent = "Please fill in all fields.";
+            statusEl.classList.add("error");
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitText.textContent = "Sending...";
+
+        try {
+            const response = await fetch(CONTACT_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, message }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                statusEl.textContent = "Message sent! I'll get back to you soon.";
+                statusEl.classList.add("success");
+                form.reset();
+            } else {
+                statusEl.textContent = data.error || "Something went wrong. Please try again.";
+                statusEl.classList.add("error");
+            }
+        } catch (err) {
+            statusEl.textContent = "Could not reach the server. Please try again later.";
+            statusEl.classList.add("error");
+        } finally {
+            submitBtn.disabled = false;
+            submitText.textContent = "Send Message";
+        }
+    });
+})();

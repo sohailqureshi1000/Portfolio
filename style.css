@@ -3616,3 +3616,76 @@ footer {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
+/* =========================
+   CONTACT FORM
+========================== */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 28px;
+    text-align: left;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.form-input {
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input::placeholder {
+    color: var(--text-faint);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+#cf-submit {
+    align-self: flex-start;
+    border: none;
+    cursor: pointer;
+}
+
+#cf-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-status {
+    font-size: 0.9rem;
+    min-height: 1.2em;
+    margin: 0;
+}
+
+.form-status.success {
+    color: var(--accent);
+}
+
+.form-status.error {
+    color: #f87171;
+}
