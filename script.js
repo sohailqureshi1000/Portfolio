@@ -9,68 +9,55 @@ const navLinks = document.querySelectorAll(".nav-links a");
 const sections = document.querySelectorAll("main section");
 
 const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
+  "(prefers-reduced-motion: reduce)",
 ).matches;
-
 
 /* =========================================
    MOBILE NAVIGATION
 ========================================= */
 
 function toggleMenu() {
+  const isOpen = navMenu.classList.toggle("active");
 
-    const isOpen = navMenu.classList.toggle("active");
+  menuToggle.setAttribute("aria-expanded", isOpen);
 
-    menuToggle.setAttribute("aria-expanded", isOpen);
-
-    menuIcon.classList.toggle("fa-bars", !isOpen);
-    menuIcon.classList.toggle("fa-xmark", isOpen);
-
+  menuIcon.classList.toggle("fa-bars", !isOpen);
+  menuIcon.classList.toggle("fa-xmark", isOpen);
 }
 
 function closeMenu() {
+  navMenu.classList.remove("active");
 
-    navMenu.classList.remove("active");
+  menuToggle.setAttribute("aria-expanded", "false");
 
-    menuToggle.setAttribute("aria-expanded", "false");
-
-    menuIcon.classList.remove("fa-xmark");
-    menuIcon.classList.add("fa-bars");
-
+  menuIcon.classList.remove("fa-xmark");
+  menuIcon.classList.add("fa-bars");
 }
 
 menuToggle.addEventListener("click", toggleMenu);
 
 navLinks.forEach((link) => {
-    link.addEventListener("click", closeMenu);
+  link.addEventListener("click", closeMenu);
 });
 
 document.addEventListener("click", (event) => {
+  const clickedInsideMenu = navMenu.contains(event.target);
+  const clickedMenuButton = menuToggle.contains(event.target);
 
-    const clickedInsideMenu = navMenu.contains(event.target);
-    const clickedMenuButton = menuToggle.contains(event.target);
-
-    if (
-        !clickedInsideMenu &&
-        !clickedMenuButton &&
-        navMenu.classList.contains("active")
-    ) {
-        closeMenu();
-    }
-
+  if (
+    !clickedInsideMenu &&
+    !clickedMenuButton &&
+    navMenu.classList.contains("active")
+  ) {
+    closeMenu();
+  }
 });
 
 document.addEventListener("keydown", (event) => {
-
-    if (
-        event.key === "Escape" &&
-        navMenu.classList.contains("active")
-    ) {
-        closeMenu();
-    }
-
+  if (event.key === "Escape" && navMenu.classList.contains("active")) {
+    closeMenu();
+  }
 });
-
 
 /* =========================================
    SCROLL PROGRESS BAR
@@ -80,26 +67,22 @@ const scrollProgress = document.getElementById("scroll-progress");
 const backToTop = document.getElementById("back-to-top");
 
 function updateScrollProgress() {
+  if (!scrollProgress) return;
 
-    if (!scrollProgress) return;
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
 
-    const scrollTop = window.scrollY;
-    const docHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
 
-    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  scrollProgress.style.width = `${progress}%`;
 
-    scrollProgress.style.width = `${progress}%`;
-
-    if (backToTop) {
-        backToTop.classList.toggle("visible", scrollTop > 480);
-    }
-
+  if (backToTop) {
+    backToTop.classList.toggle("visible", scrollTop > 480);
+  }
 }
 
 window.addEventListener("scroll", updateScrollProgress, { passive: true });
 updateScrollProgress();
-
 
 /* =========================================
    SCROLL REVEAL — IntersectionObserver
@@ -108,104 +91,81 @@ updateScrollProgress();
 const revealElements = document.querySelectorAll(".reveal");
 
 if ("IntersectionObserver" in window) {
-
-    const revealObserver = new IntersectionObserver(
-        (entries, observer) => {
-
-            entries.forEach((entry) => {
-
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("active");
-                    observer.unobserve(entry.target);
-                }
-
-            });
-
-        },
-        {
-            threshold: 0.15,
-            rootMargin: "0px 0px -80px 0px",
+  const revealObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+          observer.unobserve(entry.target);
         }
-    );
+      });
+    },
+    {
+      threshold: 0.15,
+      rootMargin: "0px 0px -80px 0px",
+    },
+  );
 
-    revealElements.forEach((element) => revealObserver.observe(element));
-
+  revealElements.forEach((element) => revealObserver.observe(element));
 } else {
+  /* Fallback for older browsers */
 
-    /* Fallback for older browsers */
-
-    revealElements.forEach((element) => element.classList.add("active"));
-
+  revealElements.forEach((element) => element.classList.add("active"));
 }
-
 
 /* =========================================
    ACTIVE NAVIGATION LINK
 ========================================= */
 
 function updateActiveNav() {
+  let currentSection = "";
 
-    let currentSection = "";
+  sections.forEach((section) => {
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.offsetHeight;
 
-    sections.forEach((section) => {
+    if (
+      window.scrollY >= sectionTop - 180 &&
+      window.scrollY < sectionTop + sectionHeight - 180
+    ) {
+      currentSection = section.getAttribute("id");
+    }
+  });
 
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.offsetHeight;
+  navLinks.forEach((link) => {
+    link.classList.remove("active");
 
-        if (
-            window.scrollY >= sectionTop - 180 &&
-            window.scrollY < sectionTop + sectionHeight - 180
-        ) {
-            currentSection = section.getAttribute("id");
-        }
+    const linkTarget = link.getAttribute("href");
 
-    });
-
-    navLinks.forEach((link) => {
-
-        link.classList.remove("active");
-
-        const linkTarget = link.getAttribute("href");
-
-        if (linkTarget === `#${currentSection}`) {
-            link.classList.add("active");
-        }
-
-    });
-
+    if (linkTarget === `#${currentSection}`) {
+      link.classList.add("active");
+    }
+  });
 }
 
 window.addEventListener("scroll", updateActiveNav, { passive: true });
 updateActiveNav();
-
 
 /* =========================================
    MAGNETIC BUTTONS
 ========================================= */
 
 if (!prefersReducedMotion && window.matchMedia("(hover: hover)").matches) {
+  document.querySelectorAll(".btn").forEach((btn) => {
+    btn.addEventListener("mousemove", (event) => {
+      const rect = btn.getBoundingClientRect();
 
-    document.querySelectorAll(".btn").forEach((btn) => {
+      const x = event.clientX - rect.left - rect.width / 2;
+      const y = event.clientY - rect.top - rect.height / 2;
 
-        btn.addEventListener("mousemove", (event) => {
-
-            const rect = btn.getBoundingClientRect();
-
-            const x = event.clientX - rect.left - rect.width / 2;
-            const y = event.clientY - rect.top - rect.height / 2;
-
-            btn.style.transform = `translate(${x * 0.12}px, ${y * 0.3}px)`;
-
-        });
-
-        btn.addEventListener("mouseleave", () => {
-            btn.style.transform = "";
-        });
-
+      btn.style.transform = `translate(${x * 0.12}px, ${y * 0.3}px)`;
     });
 
+    btn.addEventListener("mouseleave", () => {
+      btn.style.transform = "";
+    });
+  });
 }
-
 
 /* =========================================
    TYPEWRITER — hero role text (advanced)
@@ -219,82 +179,65 @@ const typewriterEl = document.getElementById("typewriter-text");
 const typewriterCursor = document.querySelector(".typewriter-cursor");
 
 if (typewriterEl) {
+  const roles = [
+    "Frontend Developer",
+    "MERN Stack Developer",
+    "Full-Stack Developer",
+  ];
 
-    const roles = [
-        "Frontend AI Engineer",
-        "Full-Stack Developer",
-        "MERN Stack Developer",
-        "Problem Solver",
-    ];
+  if (prefersReducedMotion) {
+    typewriterEl.textContent = roles[0];
+  } else {
+    let roleIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
 
-    if (prefersReducedMotion) {
+    const BASE_TYPE_SPEED = 85;
+    const BASE_DELETE_SPEED = 40;
+    const HOLD_DELAY = 1700;
+    const SWITCH_DELAY = 450;
 
-        typewriterEl.textContent = roles[0];
-
-    } else {
-
-        let roleIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-
-        const BASE_TYPE_SPEED = 85;
-        const BASE_DELETE_SPEED = 40;
-        const HOLD_DELAY = 1700;
-        const SWITCH_DELAY = 450;
-
-        function jitter(base, spread) {
-            return base + (Math.random() * spread - spread / 2);
-        }
-
-        function typeLoop() {
-
-            const currentRole = roles[roleIndex];
-
-            if (isDeleting) {
-
-                typewriterCursor?.classList.add("deleting");
-
-                charIndex -= 1;
-                typewriterEl.textContent = currentRole.slice(0, charIndex);
-
-                if (charIndex === 0) {
-                    isDeleting = false;
-                    typewriterCursor?.classList.remove("deleting");
-                    roleIndex = (roleIndex + 1) % roles.length;
-                    setTimeout(typeLoop, SWITCH_DELAY);
-                    return;
-                }
-
-                setTimeout(typeLoop, jitter(BASE_DELETE_SPEED, 18));
-
-            } else {
-
-                charIndex += 1;
-                typewriterEl.textContent = currentRole.slice(0, charIndex);
-
-                if (charIndex === currentRole.length) {
-                    isDeleting = true;
-                    setTimeout(typeLoop, HOLD_DELAY);
-                    return;
-                }
-
-                // Small chance of a brief natural pause mid-word
-                const extraPause =
-                    Math.random() < 0.08 ? jitter(220, 100) : 0;
-
-                setTimeout(
-                    typeLoop,
-                    jitter(BASE_TYPE_SPEED, 35) + extraPause
-                );
-
-            }
-
-        }
-
-        typeLoop();
-
+    function jitter(base, spread) {
+      return base + (Math.random() * spread - spread / 2);
     }
 
+    function typeLoop() {
+      const currentRole = roles[roleIndex];
+
+      if (isDeleting) {
+        typewriterCursor?.classList.add("deleting");
+
+        charIndex -= 1;
+        typewriterEl.textContent = currentRole.slice(0, charIndex);
+
+        if (charIndex === 0) {
+          isDeleting = false;
+          typewriterCursor?.classList.remove("deleting");
+          roleIndex = (roleIndex + 1) % roles.length;
+          setTimeout(typeLoop, SWITCH_DELAY);
+          return;
+        }
+
+        setTimeout(typeLoop, jitter(BASE_DELETE_SPEED, 18));
+      } else {
+        charIndex += 1;
+        typewriterEl.textContent = currentRole.slice(0, charIndex);
+
+        if (charIndex === currentRole.length) {
+          isDeleting = true;
+          setTimeout(typeLoop, HOLD_DELAY);
+          return;
+        }
+
+        // Small chance of a brief natural pause mid-word
+        const extraPause = Math.random() < 0.08 ? jitter(220, 100) : 0;
+
+        setTimeout(typeLoop, jitter(BASE_TYPE_SPEED, 35) + extraPause);
+      }
+    }
+
+    typeLoop();
+  }
 }
 
 /* =========================================
@@ -304,73 +247,45 @@ if (typewriterEl) {
 const skillItems = document.querySelectorAll(".skill-item");
 
 if ("IntersectionObserver" in window) {
+  const skillObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
 
-    const skillObserver = new IntersectionObserver(
-        (entries, observer) => {
+        const skill = entry.target;
 
-            entries.forEach((entry) => {
+        const progressCircle = skill.querySelector(".skill-progress");
 
-                if (!entry.isIntersecting) return;
-
-                const skill = entry.target;
-
-                const progressCircle =
-                    skill.querySelector(".skill-progress");
-
-                const level =
-                    skill.dataset.level;
-
-                if (progressCircle && level) {
-
-                    progressCircle.style.setProperty(
-                        "--target-progress",
-                        level
-                    );
-
-                    progressCircle.classList.add("animate");
-
-                }
-
-                observer.unobserve(skill);
-
-            });
-
-        },
-        {
-            threshold: 0.5
-        }
-    );
-
-
-    skillItems.forEach((skill) => {
-
-        skillObserver.observe(skill);
-
-    });
-
-} else {
-
-    skillItems.forEach((skill) => {
-
-        const progressCircle =
-            skill.querySelector(".skill-progress");
-
-        const level =
-            skill.dataset.level;
+        const level = skill.dataset.level;
 
         if (progressCircle && level) {
+          progressCircle.style.setProperty("--target-progress", level);
 
-            progressCircle.style.setProperty(
-                "--progress",
-                level
-            );
-
+          progressCircle.classList.add("animate");
         }
 
-    });
+        observer.unobserve(skill);
+      });
+    },
+    {
+      threshold: 0.5,
+    },
+  );
 
+  skillItems.forEach((skill) => {
+    skillObserver.observe(skill);
+  });
+} else {
+  skillItems.forEach((skill) => {
+    const progressCircle = skill.querySelector(".skill-progress");
+
+    const level = skill.dataset.level;
+
+    if (progressCircle && level) {
+      progressCircle.style.setProperty("--progress", level);
+    }
+  });
 }
-
 
 /* =========================================
    FOOTER — dynamic year
@@ -379,9 +294,8 @@ if ("IntersectionObserver" in window) {
 const footerYearEl = document.getElementById("footer-year");
 
 if (footerYearEl) {
-    footerYearEl.textContent = new Date().getFullYear();
+  footerYearEl.textContent = new Date().getFullYear();
 }
-
 
 /* =========================================
    CUSTOM CURSOR
@@ -391,104 +305,97 @@ if (footerYearEl) {
 ========================================= */
 
 const isFinePointer = window.matchMedia(
-    "(hover: hover) and (pointer: fine)"
+  "(hover: hover) and (pointer: fine)",
 ).matches;
 
 if (isFinePointer && !prefersReducedMotion) {
+  document.body.classList.add("has-custom-cursor");
 
-    document.body.classList.add("has-custom-cursor");
+  const cursorDot = document.createElement("div");
+  cursorDot.className = "cursor-dot";
 
-    const cursorDot = document.createElement("div");
-    cursorDot.className = "cursor-dot";
+  const cursorOutline = document.createElement("div");
+  cursorOutline.className = "cursor-outline";
 
-    const cursorOutline = document.createElement("div");
-    cursorOutline.className = "cursor-outline";
+  document.body.append(cursorDot, cursorOutline);
 
-    document.body.append(cursorDot, cursorOutline);
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let outlineX = mouseX;
+  let outlineY = mouseY;
+  let hasMoved = false;
 
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let outlineX = mouseX;
-    let outlineY = mouseY;
-    let hasMoved = false;
+  window.addEventListener("mousemove", (event) => {
+    mouseX = event.clientX;
+    mouseY = event.clientY;
 
-    window.addEventListener("mousemove", (event) => {
+    cursorDot.style.left = `${mouseX}px`;
+    cursorDot.style.top = `${mouseY}px`;
 
-        mouseX = event.clientX;
-        mouseY = event.clientY;
-
-        cursorDot.style.left = `${mouseX}px`;
-        cursorDot.style.top = `${mouseY}px`;
-
-        if (!hasMoved) {
-            hasMoved = true;
-            outlineX = mouseX;
-            outlineY = mouseY;
-            cursorDot.classList.add("is-active");
-            cursorOutline.classList.add("is-active");
-        }
-
-    });
-
-    // Outline eases toward the dot for a soft trailing feel
-    function animateOutline() {
-
-        outlineX += (mouseX - outlineX) * 0.18;
-        outlineY += (mouseY - outlineY) * 0.18;
-
-        cursorOutline.style.left = `${outlineX}px`;
-        cursorOutline.style.top = `${outlineY}px`;
-
-        requestAnimationFrame(animateOutline);
-
+    if (!hasMoved) {
+      hasMoved = true;
+      outlineX = mouseX;
+      outlineY = mouseY;
+      cursorDot.classList.add("is-active");
+      cursorOutline.classList.add("is-active");
     }
+  });
 
-    animateOutline();
+  // Outline eases toward the dot for a soft trailing feel
+  function animateOutline() {
+    outlineX += (mouseX - outlineX) * 0.18;
+    outlineY += (mouseY - outlineY) * 0.18;
 
-    window.addEventListener("mousedown", () => {
-        cursorOutline.classList.add("is-clicking");
+    cursorOutline.style.left = `${outlineX}px`;
+    cursorOutline.style.top = `${outlineY}px`;
+
+    requestAnimationFrame(animateOutline);
+  }
+
+  animateOutline();
+
+  window.addEventListener("mousedown", () => {
+    cursorOutline.classList.add("is-clicking");
+  });
+
+  window.addEventListener("mouseup", () => {
+    cursorOutline.classList.remove("is-clicking");
+  });
+
+  // Grow the outline over anything clickable
+  const hoverTargets =
+    "a, button, .btn, .skill-item, .project-card, .contact-item, .certificate-card, input, textarea";
+
+  document.querySelectorAll(hoverTargets).forEach((el) => {
+    el.addEventListener("mouseenter", () => {
+      cursorOutline.classList.add("is-hovering");
     });
 
-    window.addEventListener("mouseup", () => {
-        cursorOutline.classList.remove("is-clicking");
+    el.addEventListener("mouseleave", () => {
+      cursorOutline.classList.remove("is-hovering");
     });
+  });
 
-    // Grow the outline over anything clickable
-    const hoverTargets = "a, button, .btn, .skill-item, .project-card, .contact-item, .certificate-card, input, textarea";
+  // Hide the custom cursor when it leaves the window
+  document.addEventListener("mouseleave", () => {
+    cursorDot.classList.remove("is-active");
+    cursorOutline.classList.remove("is-active");
+  });
 
-    document.querySelectorAll(hoverTargets).forEach((el) => {
+  document.addEventListener("mouseenter", () => {
+    if (hasMoved) {
+      cursorDot.classList.add("is-active");
+      cursorOutline.classList.add("is-active");
+    }
+  });
 
-        el.addEventListener("mouseenter", () => {
-            cursorOutline.classList.add("is-hovering");
-        });
-
-        el.addEventListener("mouseleave", () => {
-            cursorOutline.classList.remove("is-hovering");
-        });
-
-    });
-
-    // Hide the custom cursor when it leaves the window
-    document.addEventListener("mouseleave", () => {
-        cursorDot.classList.remove("is-active");
-        cursorOutline.classList.remove("is-active");
-    });
-
-    document.addEventListener("mouseenter", () => {
-        if (hasMoved) {
-            cursorDot.classList.add("is-active");
-            cursorOutline.classList.add("is-active");
-        }
-    });
-
-    /* =========================================
+  /* =========================================
    MAILTO FALLBACK — copy email if no mail app
 ========================================= */
 
-const mailtoLinks = document.querySelectorAll('a[href^="mailto:"]');
+  const mailtoLinks = document.querySelectorAll('a[href^="mailto:"]');
 
-if (mailtoLinks.length) {
-
+  if (mailtoLinks.length) {
     const toast = document.createElement("div");
     toast.className = "email-toast";
     toast.textContent = "Email copied to clipboard!";
@@ -497,30 +404,24 @@ if (mailtoLinks.length) {
     let toastTimeout;
 
     mailtoLinks.forEach((link) => {
+      link.addEventListener("click", async (event) => {
+        const email = link.href.replace("mailto:", "").split("?")[0];
 
-        link.addEventListener("click", async (event) => {
+        try {
+          await navigator.clipboard.writeText(email);
 
-            const email = link.href.replace("mailto:", "").split("?")[0];
+          toast.classList.add("visible");
 
-            try {
-                await navigator.clipboard.writeText(email);
-
-                toast.classList.add("visible");
-
-                clearTimeout(toastTimeout);
-                toastTimeout = setTimeout(() => {
-                    toast.classList.remove("visible");
-                }, 2500);
-
-            } catch (err) {
-                // Clipboard failed silently — mailto link still attempts to open
-            }
-
-        });
-
+          clearTimeout(toastTimeout);
+          toastTimeout = setTimeout(() => {
+            toast.classList.remove("visible");
+          }, 2500);
+        } catch (err) {
+          // Clipboard failed silently — mailto link still attempts to open
+        }
+      });
     });
-
-}
+  }
 }
 /* =========================================
    CONTACT FORM SUBMISSION
@@ -533,55 +434,57 @@ const CONTACT_API_URL = "/api/contact";
 //   together from this repo, so no separate URL or CORS setup is needed.
 
 (function () {
-    const form = document.getElementById("contact-form");
-    if (!form) return;
+  const form = document.getElementById("contact-form");
+  if (!form) return;
 
-    const submitBtn = document.getElementById("cf-submit");
-    const submitText = document.getElementById("cf-submit-text");
-    const statusEl = document.getElementById("cf-status");
+  const submitBtn = document.getElementById("cf-submit");
+  const submitText = document.getElementById("cf-submit-text");
+  const statusEl = document.getElementById("cf-status");
 
-    form.addEventListener("submit", async function (e) {
-        e.preventDefault();
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-        const name = document.getElementById("cf-name").value.trim();
-        const email = document.getElementById("cf-email").value.trim();
-        const message = document.getElementById("cf-message").value.trim();
+    const name = document.getElementById("cf-name").value.trim();
+    const email = document.getElementById("cf-email").value.trim();
+    const message = document.getElementById("cf-message").value.trim();
 
-        statusEl.textContent = "";
-        statusEl.className = "form-status";
+    statusEl.textContent = "";
+    statusEl.className = "form-status";
 
-        if (!name || !email || !message) {
-            statusEl.textContent = "Please fill in all fields.";
-            statusEl.classList.add("error");
-            return;
-        }
+    if (!name || !email || !message) {
+      statusEl.textContent = "Please fill in all fields.";
+      statusEl.classList.add("error");
+      return;
+    }
 
-        submitBtn.disabled = true;
-        submitText.textContent = "Sending...";
+    submitBtn.disabled = true;
+    submitText.textContent = "Sending...";
 
-        try {
-            const response = await fetch(CONTACT_API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, message }),
-            });
+    try {
+      const response = await fetch(CONTACT_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
 
-            const data = await response.json();
+      const data = await response.json();
 
-            if (response.ok && data.success) {
-                statusEl.textContent = "Message sent! I'll get back to you soon.";
-                statusEl.classList.add("success");
-                form.reset();
-            } else {
-                statusEl.textContent = data.error || "Something went wrong. Please try again.";
-                statusEl.classList.add("error");
-            }
-        } catch (err) {
-            statusEl.textContent = "Could not reach the server. Please try again later.";
-            statusEl.classList.add("error");
-        } finally {
-            submitBtn.disabled = false;
-            submitText.textContent = "Send Message";
-        }
-    });
+      if (response.ok && data.success) {
+        statusEl.textContent = "Message sent! I'll get back to you soon.";
+        statusEl.classList.add("success");
+        form.reset();
+      } else {
+        statusEl.textContent =
+          data.error || "Something went wrong. Please try again.";
+        statusEl.classList.add("error");
+      }
+    } catch (err) {
+      statusEl.textContent =
+        "Could not reach the server. Please try again later.";
+      statusEl.classList.add("error");
+    } finally {
+      submitBtn.disabled = false;
+      submitText.textContent = "Send Message";
+    }
+  });
 })();

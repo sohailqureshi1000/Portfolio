@@ -511,6 +511,23 @@ main, header, footer {
     align-items: center;
 
     gap: 10px;
+
+    line-height: 1.4;
+}
+
+.hero-static-role {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.hero-role-separator {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.hero-aspiring {
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
 .typewriter-wrap {
@@ -3688,4 +3705,25 @@ footer {
 
 .form-status.error {
     color: #f87171;
+}
+
+@media (max-width: 600px) {
+    .hero-role {
+        gap: 8px;
+        font-size: 1rem;
+    }
+
+    .hero-role-separator {
+        display: none;
+    }
+
+    .hero-static-role,
+    .hero-aspiring,
+    .typewriter-wrap {
+        width: 100%;
+    }
+
+    .typewriter-wrap {
+        width: fit-content;
+    }
 }
