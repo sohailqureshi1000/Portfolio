@@ -506,12 +506,9 @@ main, header, footer {
 
 .hero-role {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: center;
-
-    gap: 10px;
-
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
     line-height: 1.4;
 }
 
@@ -520,56 +517,6 @@ main, header, footer {
     font-weight: 700;
 }
 
-.hero-role-separator {
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.hero-aspiring {
-    color: var(--text-muted);
-    font-weight: 600;
-}
-
-.typewriter-wrap {
-    position: relative;
-
-    display: inline-flex;
-    align-items: center;
-
-    padding: 4px 14px;
-
-    background: var(--accent-soft);
-    border: 1px solid rgba(45, 212, 191, 0.25);
-    border-radius: 999px;
-}
-
-#typewriter-text {
-    background: linear-gradient(120deg, var(--accent), var(--accent-2));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-
-    font-weight: 700;
-}
-
-.typewriter-cursor {
-    display: inline-block;
-
-    width: 2px;
-    height: 0.9em;
-
-    margin-left: 4px;
-
-    background: var(--accent);
-    border-radius: 2px;
-    box-shadow: 0 0 8px var(--accent-glow);
-
-    animation: cursorBlink 0.9s steps(1) infinite;
-}
-
-.typewriter-cursor.deleting {
-    background: var(--accent-2);
-}
 
 @media (prefers-reduced-motion: reduce) {
     .typewriter-cursor {
