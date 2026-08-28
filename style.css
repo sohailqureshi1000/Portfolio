@@ -417,6 +417,15 @@ main, header, footer {
     animation: blobFloat 14s ease-in-out infinite reverse;
 }
 
+#shader-hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+    pointer-events: none;
+}
 @media (prefers-reduced-motion: reduce) {
     .hero-blob { animation: none; }
 }
